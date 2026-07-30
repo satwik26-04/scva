@@ -158,20 +158,78 @@ print(f"Bibliography Quality Score: {report.integrity.bibliography_quality_score
 
 ---
 
+## 🎯 Model Selection & Customization
+
+SCVA provides **three flexible ways** to select and customize AI models across all integrated providers:
+
+### 1. One-Time CLI Flag Override (`--model`)
+Pass `--model` on any command to override the model for a single audit:
+
+```bash
+# DeepSeek Reasoner (R1 reasoning model)
+scva audit references.bib manuscript.tex -m deepseek --model deepseek-reasoner
+
+# Google Gemini 2.0 Flash / Pro
+scva audit references.bib manuscript.tex -m gemini --model gemini-2.0-pro-exp
+
+# Moonshot AI (Kimi K1.5)
+scva audit references.bib manuscript.tex -m moonshot --model kimi-k1.5
+
+# OpenAI GPT-4o
+scva audit references.bib manuscript.tex -m openai --model gpt-4o
+
+# Anthropic Claude 3.5 Sonnet
+scva audit references.bib manuscript.tex -m claude --model claude-3-5-sonnet-20241022
+
+# Local Ollama
+scva audit references.bib manuscript.tex -m ollama --model qwen2.5-coder:32b
+```
+
+### 2. Persistent Model Configuration (`scva config set-model`)
+Set permanent default models per provider in `~/.scva/config.json`:
+
+```bash
+# Configure default models
+scva config set-model deepseek deepseek-reasoner
+scva config set-model gemini gemini-2.0-pro-exp
+scva config set-model moonshot kimi-latest
+scva config set-model openai gpt-4o
+scva config set-model ollama llama3.3
+
+# Check configured defaults
+scva config show
+```
+
+### 3. Programmatic Python API
+Specify `oracle_mode` and `model` directly when calling SCVA in Python code:
+
+```python
+from scva.api import audit
+
+report = audit(
+    bib_path="references.bib",
+    tex_path="manuscript.tex",
+    oracle_mode="deepseek",
+    model="deepseek-reasoner",
+)
+```
+
+---
+
 ## 🤖 Supported LLM Oracle Providers
 
-| Provider | Oracle Flag (`-m`) | Base Endpoint / API | Default Model |
-|---|---|---|---|
-| **Antigravity (IDE Agent)** | `-m antigravity` | In-IDE `ai_queries.json` / `ai_responses.json` | N/A |
-| **DeepSeek** | `-m deepseek` | `https://api.deepseek.com` | `deepseek-chat` / `deepseek-reasoner` |
-| **Moonshot AI (Kimi)** | `-m moonshot` | `https://api.moonshot.ai/v1` | `kimi-latest` |
-| **Google Gemini API** | `-m gemini` | REST `generativelanguage.googleapis.com` | `gemini-2.0-flash` |
-| **OpenAI API** | `-m openai` | REST `api.openai.com/v1` | `gpt-4o-mini` |
-| **Anthropic Claude API** | `-m claude` | REST `api.anthropic.com/v1` | `claude-3-5-haiku-20241022` |
-| **Local LLMs (Ollama)** | `-m ollama` | `http://localhost:11434` | `llama3.2` |
-| **OpenRouter** | `-m openrouter` | REST `openrouter.ai/api/v1` | `meta-llama/llama-3.3-70b-instruct` |
-| **NanoGPT** | `-m nanogpt` | REST `nano-gpt.com/api/v1` | `gpt-4o-mini` |
-| **Zhipu GLM / Z.ai** | `-m glm` | REST `open.bigmodel.cn/api/paas/v4` | `glm-4-flash` |
+| Provider | Oracle Flag (`-m`) | Base Endpoint / API | Default Model | Custom Model Selection |
+|---|---|---|---|---|
+| **Antigravity (IDE Agent)** | `-m antigravity` | In-IDE `ai_queries.json` / `ai_responses.json` | Automatic (IDE Session) | Automatic |
+| **DeepSeek** | `-m deepseek` | `https://api.deepseek.com` | `deepseek-chat` | `--model deepseek-reasoner` |
+| **Moonshot AI (Kimi)** | `-m moonshot` | `https://api.moonshot.ai/v1` | `kimi-latest` | `--model kimi-k1.5` |
+| **Google Gemini API** | `-m gemini` | REST `generativelanguage.googleapis.com` | `gemini-2.0-flash` | `--model gemini-2.0-pro-exp` |
+| **OpenAI API** | `-m openai` | REST `api.openai.com/v1` | `gpt-4o-mini` | `--model gpt-4o` |
+| **Anthropic Claude API** | `-m claude` | REST `api.anthropic.com/v1` | `claude-3-5-haiku-20241022` | `--model claude-3-5-sonnet-20241022` |
+| **Local LLMs (Ollama)** | `-m ollama` | `http://localhost:11434` | `llama3.2` | `--model qwen2.5-coder:32b` |
+| **OpenRouter** | `-m openrouter` | REST `openrouter.ai/api/v1` | `meta-llama/llama-3.3-70b-instruct` | `--model anthropic/claude-3.5-sonnet` |
+| **NanoGPT** | `-m nanogpt` | REST `nano-gpt.com/api/v1` | `gpt-4o-mini` | `--model gpt-4o` |
+| **Zhipu GLM / Z.ai** | `-m glm` | REST `open.bigmodel.cn/api/paas/v4` | `glm-4-flash` | `--model glm-4-plus` |
 
 ---
 

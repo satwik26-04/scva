@@ -24,7 +24,7 @@ if sys.platform == "win32":
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
-console = Console(force_terminal=True)
+console = Console(force_terminal=True, record=True)
 
 
 HEADER_BANNER = """
@@ -131,6 +131,13 @@ def audit(bib_path: str, tex_path: str, output_dir: str, oracle_mode: str | None
             f"Run [bold cyan]scva ask --output-dir {output_dir}[/bold cyan] to inspect pending queries.",
             border_style="yellow",
         ))
+
+    try:
+        assets_dir = Path("assets")
+        assets_dir.mkdir(exist_ok=True)
+        console.save_svg(str(assets_dir / "terminal_audit.svg"), title="SCVA Citation Audit CLI")
+    except Exception:
+        pass
 
 
 # ---------------------------------------------------------------------------
