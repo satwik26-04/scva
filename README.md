@@ -10,18 +10,18 @@
 
 ---
 
-## 🌟 Key Features
+## Key Features
 
-- **🔍 Multi-Source Metadata Consensus:** Cross-verifies references against Crossref, DBLP, OpenAlex, Semantic Scholar, and arXiv.
-- **🧠 Multi-Provider AI Oracle:** Supports DeepSeek, Moonshot AI (Kimi), Google Gemini, OpenAI, Anthropic Claude, OpenRouter, NanoGPT, Zhipu GLM, and Local LLMs (Ollama).
-- **🤖 IDE Agent Integration:** Works seamlessly with IDE AI assistants (e.g. Antigravity) via zero-config `ai_queries.json` / `ai_responses.json` file protocol.
-- **📊 Claim-to-Citation Audit:** Verifies if cited papers genuinely support manuscript assertions (`FULLY_SUPPORTED`, `CONTRADICTS`, etc.).
-- **✍️ Automatic BibTeX Repair:** Generates clean, corrected, publication-ready `.bib` files.
-- **📈 Multi-Format Exports:** Produces Markdown reports, interactive HTML dashboards, JSON, CSV, and corrected BibTeX.
+- **Multi-Source Metadata Consensus:** Cross-verifies references against Crossref, DBLP, OpenAlex, Semantic Scholar, and arXiv.
+- **Multi-Provider AI Oracle:** Supports DeepSeek, Moonshot AI (Kimi), Google Gemini, OpenAI, Anthropic Claude, OpenRouter, NanoGPT, Zhipu GLM, and Local LLMs (Ollama).
+- **IDE Agent Integration:** Works seamlessly with IDE AI assistants (e.g. Antigravity) via zero-config `ai_queries.json` / `ai_responses.json` file protocol.
+- **Claim-to-Citation Audit:** Verifies if cited papers genuinely support manuscript assertions (`FULLY_SUPPORTED`, `CONTRADICTS`, etc.).
+- **Automatic BibTeX Repair:** Generates clean, corrected, publication-ready `.bib` files.
+- **Multi-Format Exports:** Produces Markdown reports, interactive HTML dashboards, JSON, CSV, and corrected BibTeX.
 
 ---
 
-## 🤖 Equipping Antigravity AI Agent with SCVA Skill
+## Equipping Antigravity AI Agent with SCVA Skill
 
 To give your **Antigravity AI Agent** (or any compatible LLM pair-programming agent) the ability to automatically run SCVA citation audits:
 
@@ -42,7 +42,7 @@ To give your **Antigravity AI Agent** (or any compatible LLM pair-programming ag
 
 ---
 
-## 🏗️ 18-Stage Verification Architecture
+## 18-Stage Verification Architecture
 
 ```
                   ┌──────────────────────────────────────────────────┐
@@ -78,7 +78,7 @@ To give your **Antigravity AI Agent** (or any compatible LLM pair-programming ag
 
 ---
 
-## 📦 Installation
+## Installation
 
 Install SCVA directly from PyPI via `pip`:
 
@@ -96,7 +96,7 @@ pip install -e .
 
 ---
 
-## 🚀 Quick Start CLI
+## Quick Start CLI
 
 ### 1. Run Full Audit
 
@@ -140,7 +140,7 @@ scva audit references.bib manuscript.tex -m ollama --model llama3.2
 
 ---
 
-## 💻 Python API Usage
+## Python API Usage
 
 ```python
 from scva.api import audit
@@ -158,7 +158,7 @@ print(f"Bibliography Quality Score: {report.integrity.bibliography_quality_score
 
 ---
 
-## 🎯 Model Selection & Customization
+## Model Selection & Customization
 
 SCVA provides **three flexible ways** to select and customize AI models across all integrated providers:
 
@@ -216,7 +216,7 @@ report = audit(
 
 ---
 
-## 🤖 Supported LLM Oracle Providers
+## Supported LLM Oracle Providers
 
 | Provider | Oracle Flag (`-m`) | Base Endpoint / API | Default Model | Custom Model Selection |
 |---|---|---|---|---|
@@ -233,7 +233,7 @@ report = audit(
 
 ---
 
-## 📄 Output Reports
+## Output Reports
 
 When an audit completes, SCVA outputs:
 
@@ -244,6 +244,6 @@ When an audit completes, SCVA outputs:
 
 ---
 
-## 📜 License
+## License
 
 This project is licensed under the [MIT License](LICENSE).
