@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCVA Audit Dashboard</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #38bdf8;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --success: #4ade80;
+            --warning: #facc15;
+            --danger: #f87171;
+            --border: #334155;
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 2rem;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header { border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 2rem; }
+        h1 { margin: 0; color: var(--accent); font-size: 1.8rem; }
+        .subtitle { color: var(--muted); font-size: 0.9rem; margin-top: 0.4rem; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .card { background: var(--card-bg); padding: 1.2rem; border-radius: 8px; border: 1px solid var(--border); }
+        .card .metric { font-size: 2rem; font-weight: bold; color: var(--accent); }
+        .card .label { color: var(--muted); font-size: 0.85rem; margin-top: 0.2rem; }
+
+        table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+        th, td { padding: 0.8rem 1rem; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        th { background: #0f172a; color: var(--muted); font-weight: 600; }
+        tr:hover { background: #26354a; }
+
+        .badge { padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+        .badge-ok { background: rgba(74, 222, 128, 0.2); color: var(--success); }
+        .badge-warn { background: rgba(250, 204, 21, 0.2); color: var(--warning); }
+        .badge-err { background: rgba(248, 113, 113, 0.2); color: var(--danger); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Scientific Citation Verification Dashboard</h1>
+            <div class="subtitle">Manuscript: {{ report.input_tex }} | Run ID: {{ report.run_id }}</div>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <div class="metric">{{ (report.integrity.publication_readiness_score * 100) | round(1) }}%</div>
+                <div class="label">Publication Readiness</div>
+            </div>
+            <div class="card">
+                <div class="metric">{{ (report.integrity.bibliography_quality_score * 100) | round(1) }}%</div>
+                <div class="label">BibTeX Quality</div>
+            </div>
+            <div class="card">
+                <div class="metric">{{ (report.integrity.citation_quality_score * 100) | round(1) }}%</div>
+                <div class="label">Citation Integrity</div>
+            </div>
+            <div class="card">
+                <div class="metric">{{ report.integrity.total_references }}</div>
+                <div class="label">Total References</div>
+            </div>
+        </div>
+
+        <h2>Citation Entry Details</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Status</th>
+                    <th>Confidence</th>
+                    <th>Metadata Errors</th>
+                    <th>Claim Support</th>
+                    <th>Recommendations</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in report.entries %}
+                <tr>
+                    <td><code>{{ entry.key }}</code></td>
+                    <td>
+                        {% if entry.overall_status() == "OK" %}
+                        <span class="badge badge-ok">OK</span>
+                        {% else %}
+                        <span class="badge badge-err">{{ entry.overall_status() }}</span>
+                        {% endif %}
+                    </td>
+                    <td><span class="badge badge-warn">{{ entry.confidence.label() }} ({{ (entry.confidence.overall * 100) | round(0) }}%)</span></td>
+                    <td>{{ entry.metadata.errors() | length }}</td>
+                    <td>
+                        {% if entry.claim_supports %}
+                        {{ entry.claim_supports[0].label.value }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% for rec in entry.recommendations %}
+                        <div>• {{ rec }}</div>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
