@@ -27,9 +27,9 @@ import aiohttp
 from .config import ConfigManager
 
 
-# ---------------------------------------------------------------------------
+
 # Query / Response schemas
-# ---------------------------------------------------------------------------
+
 
 @dataclass
 class AIQuery:
@@ -56,9 +56,9 @@ class AIResponse:
     verified_by: str = "ai_oracle"
 
 
-# ---------------------------------------------------------------------------
+
 # Abstract Base Oracle
-# ---------------------------------------------------------------------------
+
 
 class AIOracle(ABC):
     @abstractmethod
@@ -71,18 +71,18 @@ class AIOracle(ABC):
         return self.query(q)
 
 
-# ---------------------------------------------------------------------------
+
 # Null Oracle (Rule-based fallback)
-# ---------------------------------------------------------------------------
+
 
 class NullOracle(AIOracle):
     def query(self, q: AIQuery) -> Optional[AIResponse]:
         return None
 
 
-# ---------------------------------------------------------------------------
+
 # FileBasedOracle — Default for Antigravity IDE Integration
-# ---------------------------------------------------------------------------
+
 
 class FileBasedOracle(AIOracle):
     """
@@ -144,9 +144,9 @@ class FileBasedOracle(AIOracle):
             self._responses[resp.query_id] = resp
 
 
-# ---------------------------------------------------------------------------
+
 # OpenAI-Compatible Generic Oracle (OpenAI, OpenRouter, NanoGPT, GLM, Custom)
-# ---------------------------------------------------------------------------
+
 
 class OpenAICompatibleOracle(AIOracle):
     """Generic Oracle supporting any OpenAI-compatible chat completions API."""
@@ -206,9 +206,9 @@ class OpenAICompatibleOracle(AIOracle):
         return None  # Called via query_async in pipeline
 
 
-# ---------------------------------------------------------------------------
+
 # Ollama Local LLM Oracle
-# ---------------------------------------------------------------------------
+
 
 class OllamaOracle(AIOracle):
     """Local LLM Oracle connecting to Ollama (http://localhost:11434)."""
@@ -258,9 +258,9 @@ class OllamaOracle(AIOracle):
         return None
 
 
-# ---------------------------------------------------------------------------
+
 # Anthropic Claude Oracle
-# ---------------------------------------------------------------------------
+
 
 class ClaudeOracle(AIOracle):
     """Anthropic Claude API integration."""
@@ -310,9 +310,9 @@ class ClaudeOracle(AIOracle):
         return None
 
 
-# ---------------------------------------------------------------------------
+
 # Google Gemini Oracle
-# ---------------------------------------------------------------------------
+
 
 class GeminiOracle(AIOracle):
     """Google Gemini API integration via REST endpoint."""
@@ -353,9 +353,9 @@ class GeminiOracle(AIOracle):
         return None
 
 
-# ---------------------------------------------------------------------------
+
 # Multi-Provider Factory
-# ---------------------------------------------------------------------------
+
 
 def make_oracle(
     mode: str = "antigravity",
@@ -436,9 +436,9 @@ def make_oracle(
     raise ValueError(f"Unknown oracle mode '{mode}'. Choose from: antigravity, gemini, openai, claude, ollama, openrouter, nanogpt, glm")
 
 
-# ---------------------------------------------------------------------------
+
 # Helpers
-# ---------------------------------------------------------------------------
+
 
 def make_claim_support_query(
     claim_text: str,

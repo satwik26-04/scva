@@ -44,9 +44,7 @@ def main():
     pass
 
 
-# ---------------------------------------------------------------------------
-# AUDIT COMMAND
-# ---------------------------------------------------------------------------
+
 
 @main.command()
 @click.argument("bib_path", type=click.Path(exists=True))
@@ -140,10 +138,6 @@ def audit(bib_path: str, tex_path: str, output_dir: str, oracle_mode: str | None
         pass
 
 
-# ---------------------------------------------------------------------------
-# ASK & INGEST COMMANDS
-# ---------------------------------------------------------------------------
-
 @main.command()
 @click.option("--output-dir", "-o", default="./scva_output", help="Audit output directory.")
 def ask(output_dir: str):
@@ -175,10 +169,6 @@ def ingest_response(response_path: str, output_dir: str):
     count = oracle.ingest(Path(response_path))
     console.print(f"[bold green]Ingested {count} AI Oracle responses successfully![/bold green]")
 
-
-# ---------------------------------------------------------------------------
-# CONFIG COMMAND GROUP
-# ---------------------------------------------------------------------------
 
 @main.group()
 def config():

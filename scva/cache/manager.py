@@ -50,9 +50,9 @@ class CacheManager:
         self._conn.executescript(_DDL)
         self._conn.commit()
 
-    # ------------------------------------------------------------------
+
     # Metadata cache
-    # ------------------------------------------------------------------
+
 
     def get_metadata(self, source: str, identifier: str) -> Optional[dict]:
         key = _make_key(source, identifier)
@@ -89,9 +89,9 @@ class CacheManager:
         )
         self._conn.commit()
 
-    # ------------------------------------------------------------------
+
     # PDF text cache
-    # ------------------------------------------------------------------
+
 
     def get_pdf_text(self, doi_or_url: str) -> Optional[str]:
         row = self._conn.execute(
@@ -106,9 +106,9 @@ class CacheManager:
         )
         self._conn.commit()
 
-    # ------------------------------------------------------------------
+
     # Run state (for resume)
-    # ------------------------------------------------------------------
+
 
     def save_run_state(self, run_id: str, stage: str, state: Any) -> None:
         self._conn.execute(
