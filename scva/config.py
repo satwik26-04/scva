@@ -40,7 +40,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "custom": "",
         # Citation Services
         "semantic_scholar": "",
-        "crossref_mailto": "satwikshukla2004@gmail.com",
+        "crossref_mailto": "scva-polite@research-community.org",
         "openalex": "",
     },
     "custom_endpoints": {
