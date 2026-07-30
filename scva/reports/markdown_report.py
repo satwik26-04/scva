@@ -41,23 +41,24 @@ def generate_markdown_report(report: FinalReport, output_path: Path) -> Path:
     lines.append("## Per-Citation Verification Audit\n")
 
     for entry in report.entries:
-        status_icon = "✅" if entry.overall_status() == "OK" else "⚠️"
-        lines.append(f"### {status_icon} `{entry.key}` — Confidence: {entry.confidence.label()} ({entry.confidence.overall * 100:.0f}%)\n")
+        status_tag = f"[{entry.overall_status()}]"
+        lines.append(f"### {status_tag} `{entry.key}` — Confidence: {entry.confidence.label()} ({entry.confidence.overall * 100:.0f}%)\n")
+        lines.append(f"- **Title:** {entry.title}")
+        lines.append(f"- **Authors:** {', '.join(entry.authors)}")
+        lines.append(f"- **Venue/Year:** {entry.venue} ({entry.year})\n")
 
-        # Metadata table
-        lines.append("| Field | Current BibTeX Value | Verified Value | Status | Source |")
-        lines.append("|---|---|---|---|---|")
-        for f in entry.metadata.fields:
-            s_icon = "✅" if f.status == "CORRECT" else ("🔧" if f.status == "CORRECTED" else "❓")
-            lines.append(f"| `{f.field_name}` | {f.bib_value} | {f.verified_value} | {s_icon} {f.status} | {f.source} |")
+        lines.append("| Field | Verified Value | Status | Source |")
+        lines.append("|---|---|---|---|")
+        for f in entry.fields:
+            s_tag = f"[{f.status}]"
+            lines.append(f"| `{f.field}` | `{f.value}` | {s_tag} | {f.source} |")
         lines.append("")
 
-        # Claims Supported
         if entry.claim_supports:
-            lines.append("**Claim Support Analysis:**")
+            lines.append("**Claim Support Statements:**")
             for cs in entry.claim_supports:
-                c_icon = "✅" if cs.label in ("FULLY_SUPPORTED", "PARTIALLY_SUPPORTED") else "❌"
-                lines.append(f"- {c_icon} **[{cs.label}]** {cs.explanation}")
+                c_tag = f"[{cs.label}]"
+                lines.append(f"- {c_tag} Claim: *\"{cs.claim_text}\"*")
                 if cs.evidence_quote:
                     lines.append(f"  > *\"{cs.evidence_quote}\"* ({cs.evidence_location})")
             lines.append("")

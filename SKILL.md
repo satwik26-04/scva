@@ -9,7 +9,7 @@ This skill enables AI assistants (such as Antigravity) to perform automated, mul
 
 ---
 
-## 🛠️ Installation & Setup
+## Installation & Setup
 
 1. **Install SCVA:**
    ```bash
@@ -23,7 +23,7 @@ This skill enables AI assistants (such as Antigravity) to perform automated, mul
 
 ---
 
-## 🤖 Protocol for AI Assistant Execution
+## Protocol for AI Assistant Execution
 
 When the user asks you to audit a bibliography (`.bib`), check citations in a manuscript (`.tex`), or prepare references for paper submission (AAAI, NeurIPS, ICML, ICLR, CVPR, Nature, Science, etc.):
 
@@ -72,13 +72,13 @@ If pending queries are reported (`ai_queries.json` exists in `<output_dir>`):
    ```
 
 5. **Finalize Audit Reports:**
-   Re-run `scva audit` to update all final reports with 100% verified intelligence metrics.
+   Re-run `scva audit` to update all final reports with 100% verified intelligence entries.
 
 ---
 
-## 📑 Generated Output Artifacts
+## Generated Output Artifacts
 
-- 📄 `report.md` — Comprehensive Markdown verification report
-- 📊 `report.html` — Interactive HTML dashboard
-- ✍️ `references_corrected.bib` — Publication-ready auto-fixed BibTeX file
-- 📑 `report.json` & `report.csv` — Machine-readable & spreadsheet exports
+- `report.md` — Comprehensive Markdown verification report
+- `report.html` — Interactive HTML dashboard
+- `references_corrected.bib` — Publication-ready auto-fixed BibTeX file
+- `report.json` & `report.csv` — Machine-readable & spreadsheet exports
