@@ -10,16 +10,6 @@
 
 ---
 
-## 📸 Visual Previews
-
-### 💻 Rich Terminal Interface & Progress Audit
-![SCVA Terminal Interface](assets/cli_dashboard.png)
-
-### 📊 Interactive HTML Audit Dashboard
-![SCVA Interactive HTML Dashboard](assets/html_dashboard.png)
-
----
-
 ## 🌟 Key Features
 
 - **🔍 Multi-Source Metadata Consensus:** Cross-verifies references against Crossref, DBLP, OpenAlex, Semantic Scholar, and arXiv.
