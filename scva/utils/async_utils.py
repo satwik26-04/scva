@@ -8,7 +8,7 @@ import aiohttp
 from typing import Any, Optional
 
 DEFAULT_HEADERS = {
-    "User-Agent": "SCVA/1.0 (Scientific Citation Verification Agent; mailto:scva-agent@research.org)",
+    "User-Agent": "SCVA/1.0 (Scientific Citation Verification Agent; mailto:satwikshukla2004@gmail.com)",
     "Accept": "application/json",
 }
 
