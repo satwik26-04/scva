@@ -79,10 +79,15 @@ To give your **Antigravity AI Agent** (or any compatible LLM pair-programming ag
 
 ## 📦 Installation
 
-Install SCVA directly via `pip`:
+Install SCVA directly from PyPI via `pip`:
 
 ```bash
-# Clone and install locally in editable mode
+pip install scva
+```
+
+Or install from GitHub source:
+
+```bash
 git clone https://github.com/satwik26-04/scva.git
 cd scva
 pip install -e .

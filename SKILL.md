@@ -13,7 +13,7 @@ This skill enables AI assistants (such as Antigravity) to perform automated, mul
 
 1. **Install SCVA:**
    ```bash
-   pip install git+https://github.com/satwik26-04/scva.git
+   pip install scva
    ```
 
 2. **Add Skill to your Agent Configuration:**
