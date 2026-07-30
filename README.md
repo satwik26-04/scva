@@ -20,6 +20,27 @@
 
 ---
 
+## 🤖 Equipping Antigravity AI Agent with SCVA Skill
+
+To give your **Antigravity AI Agent** (or any compatible LLM pair-programming agent) the ability to automatically run SCVA citation audits:
+
+1. **Install SCVA:**
+   ```bash
+   pip install git+https://github.com/satwik26-04/scva.git
+   ```
+
+2. **Add `SKILL.md` to your Project or Agent Configuration:**
+   Copy the [`SKILL.md`](SKILL.md) file included in this repository to:
+   - **Workspace Level:** `.agents/skills/scva-citation-audit/SKILL.md`
+   - **Global Level:** `~/.gemini/config/skills/scva-citation-audit/SKILL.md`
+
+3. **Ask your agent:**
+   > *"Audit my paper's bibliography `references.bib` and manuscript `paper.tex`."*
+
+   Your agent will automatically execute SCVA, perform in-IDE semantic claim evaluations via the AI Oracle protocol, and deliver publication-ready corrected `.bib` files and visual dashboards.
+
+---
+
 ## 🏗️ 18-Stage Verification Architecture
 
 ```
@@ -69,9 +90,9 @@ pip install -e .
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start CLI
 
-### 1. Run Full Audit via CLI
+### 1. Run Full Audit
 
 ```bash
 scva audit references.bib manuscript.tex --output-dir ./scva_output
