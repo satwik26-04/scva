@@ -1,21 +1,41 @@
 """
 Command Line Interface (CLI) for SCVA built with Click and Rich.
+Features a stunning, color-coded terminal dashboard UI.
 """
 from __future__ import annotations
 
+import os
+import sys
 import asyncio
 import json
 from pathlib import Path
 import click
-from rich.console import Console
-from rich.panel import Panel
-from rich.table import Table
-
 from .config import ConfigManager
 from .pipeline import VerificationPipeline
 from .oracle import FileBasedOracle
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
+from rich.align import Align
+from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn
 
-console = Console()
+# Force UTF-8 encoding for Windows terminal output
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
+console = Console(force_terminal=True)
+
+
+HEADER_BANNER = """
+ ███████╗██╗   ██╗██████╗ ██████╗ 
+ ██╔════╝██║   ██║██╔══██╗██╔══██╗
+ ███████╗██║   ██║██████╔╝███████║
+ ╚════██║██║   ██║██╔═══╝ ██╔══██║
+ ███████║╚██████╔╝██║     ██║  ██║
+ ╚══════╝ ╚═════╝ ╚═╝     ╚═╝  ╚═╝
+ Scientific Citation Verification Agent v1.0.0
+"""
 
 
 @click.group()
@@ -44,11 +64,8 @@ def audit(bib_path: str, tex_path: str, output_dir: str, oracle_mode: str | None
     cfg = ConfigManager()
     mode = oracle_mode or cfg.get_default_oracle()
 
-    console.print(Panel(
-        f"[bold cyan]Scientific Citation Verification Agent (SCVA)[/bold cyan]\n"
-        f"Starting 18-stage citation audit...\n"
-        f"[dim]Oracle Mode: [bold yellow]{mode}[/bold yellow] | Output: [underline]{output_dir}[/underline][/dim]"
-    ))
+    console.print(Panel(Align.center(HEADER_BANNER), border_style="cyan", expand=False))
+    console.print(f" [bold dim]Manuscript:[/bold dim] [underline]{Path(tex_path).name}[/underline] | [bold dim]Bibliography:[/bold dim] [underline]{Path(bib_path).name}[/underline] | [bold dim]Oracle:[/bold dim] [bold yellow]{mode}[/bold yellow]\n")
 
     pipeline = VerificationPipeline(
         bib_path=bib_path,
@@ -57,29 +74,63 @@ def audit(bib_path: str, tex_path: str, output_dir: str, oracle_mode: str | None
         oracle_mode=mode,
     )
 
-    with console.status("[bold green]Running audit pipeline...[/bold green]"):
+    with Progress(
+        SpinnerColumn(spinner_name="dots"),
+        TextColumn("[bold cyan]{task.description}[/bold cyan]"),
+        BarColumn(bar_width=40, style="dim", complete_style="bold green"),
+        TimeElapsedColumn(),
+        console=console,
+    ) as progress:
+        task = progress.add_task("Executing 18-stage citation & claim verification pipeline...", total=100)
         report = asyncio.run(pipeline.run())
+        progress.update(task, completed=100)
 
     integ = report.integrity
-    console.print("\n[bold green]Audit Completed Successfully![/bold green]\n")
+    console.print("\n[bold green]Audit Pipeline Completed Successfully![/bold green]\n")
 
-    table = Table(title="Scientific Citation Integrity Summary")
-    table.add_column("Metric", style="cyan")
-    table.add_column("Value", style="bold white")
+    # Render Summary Dashboard Table
+    table = Table(title="Scientific Citation Integrity Report", title_style="bold magenta", header_style="bold cyan", border_style="dim")
+    table.add_column("Metric", style="bold white", width=36)
+    table.add_column("Value / Count", style="bold yellow", justify="right")
+    table.add_column("Status / Rating", style="bold green")
 
-    table.add_row("Publication Readiness Score", f"{integ.publication_readiness_score * 100:.1f}%")
-    table.add_row("Bibliography Quality Score", f"{integ.bibliography_quality_score * 100:.1f}%")
-    table.add_row("Citation Quality Score", f"{integ.citation_quality_score * 100:.1f}%")
-    table.add_row("Total References", str(integ.total_references))
-    table.add_row("Verified References", str(integ.verified_count))
-    table.add_row("Corrected Metadata Entries", str(integ.corrected_count))
-    table.add_row("Unsupported / Contradicted Claims", str(integ.unsupported_claims + integ.contradicted_claims))
+    readiness = integ.publication_readiness_score * 100
+    readiness_badge = "[bold green]HIGH READINESS[/bold green]" if readiness >= 75 else ("[bold yellow]MODERATE[/bold yellow]" if readiness >= 50 else "[bold red]ACTION REQUIRED[/bold red]")
+    table.add_row("Publication Readiness Score", f"{readiness:.1f}%", readiness_badge)
+
+    bib_q = integ.bibliography_quality_score * 100
+    bib_badge = "[green]EXCELLENT[/green]" if bib_q >= 80 else ("[yellow]CORRECTIONS MADE[/yellow]" if bib_q >= 40 else "[red]NEEDS REPAIR[/red]")
+    table.add_row("Bibliography Quality Score", f"{bib_q:.1f}%", bib_badge)
+
+    cit_q = integ.citation_quality_score * 100
+    cit_badge = "[green]VERIFIED SUPPORTED[/green]" if cit_q >= 90 else "[yellow]UNSUPPORTED CLAIMS[/yellow]"
+    table.add_row("Citation Claim Integrity Score", f"{cit_q:.1f}%", cit_badge)
+
+    table.add_section()
+    table.add_row("Total References Audited", str(integ.total_references), "100% Processed")
+    table.add_row("Verified High-Confidence Entries", str(integ.verified_count), f"[dim]{integ.verified_count}/{integ.total_references} entries[/dim]")
+    table.add_row("Corrected Metadata Fields", str(integ.corrected_count), "[yellow]Updated in references_corrected.bib[/yellow]")
+    table.add_row("Unsupported / Contradicted Claims", str(integ.unsupported_claims + integ.contradicted_claims), "[green]0 Discrepancies[/green]" if (integ.unsupported_claims + integ.contradicted_claims) == 0 else "[red]Review Required[/red]")
 
     console.print(table)
-    console.print(f"\n[bold yellow]Report Artifacts Written To:[/bold yellow] [underline]{Path(output_dir).resolve()}[/underline]\n")
+
+    output_path = Path(output_dir).resolve()
+    console.print(Panel(
+        f"[bold white]Generated Audit Artifacts:[/bold white]\n"
+        f" Markdown Report: {output_path / 'report.md'}\n"
+        f" HTML Dashboard:  {output_path / 'report.html'}\n"
+        f" Corrected BibTeX: {output_path / 'references_corrected.bib'}\n"
+        f" JSON & CSV Data: {output_path / 'report.json'}, {output_path / 'report.csv'}",
+        border_style="green",
+        title="Results Ready",
+    ))
 
     if report.ai_queries_pending > 0:
-        console.print(f"[bold red]Note:[/bold red] {report.ai_queries_pending} queries pending AI Oracle review. Run `scva ask` or check `ai_queries.json` to review.")
+        console.print(Panel(
+            f"[bold yellow]Notice:[/bold yellow] {report.ai_queries_pending} queries pending AI Oracle review.\n"
+            f"Run [bold cyan]scva ask --output-dir {output_dir}[/bold cyan] to inspect pending queries.",
+            border_style="yellow",
+        ))
 
 
 # ---------------------------------------------------------------------------
@@ -98,11 +149,14 @@ def ask(output_dir: str):
     text = queries_file.read_text(encoding="utf-8", errors="replace")
     data = json.loads(text)
     queries = data.get("queries", [])
-    console.print(f"[bold cyan]Pending AI Queries ({len(queries)}):[/bold cyan]\n")
+    console.print(f"\n[bold cyan]Pending AI Oracle Queries ({len(queries)}):[/bold cyan]\n")
 
     for q in queries:
-        console.print(f"[bold]Query ID:[/bold] {q['query_id']} | [bold]Type:[/bold] {q['query_type']} | [bold]Key:[/bold] {q['citation_key']}")
-        console.print(f"[dim]{q['instruction']}[/dim]\n")
+        console.print(Panel(
+            f"[bold yellow]ID:[/bold yellow] {q['query_id']} | [bold cyan]Type:[/bold cyan] {q['query_type']} | [bold green]Key:[/bold green] {q['citation_key']}\n"
+            f"[dim]{q['instruction']}[/dim]",
+            border_style="dim",
+        ))
 
 
 @main.command()
@@ -131,23 +185,29 @@ def config_show():
     cfg = ConfigManager()
     safe = cfg.show()
 
-    console.print(Panel(
-        f"[bold cyan]SCVA Configuration[/bold cyan]\n"
-        f"Default Oracle: [bold yellow]{safe['default_oracle']}[/bold yellow]\n\n"
-        f"[bold]Configured API Keys:[/bold]\n"
-        + "\n".join(f"  {k}: {v or '[dim]Not set[/dim]'}" for k, v in safe["api_keys"].items())
-        + "\n\n[bold]Default Models:[/bold]\n"
-        + "\n".join(f"  {k}: {v}" for k, v in safe["default_models"].items())
-        + "\n\n[bold]Custom Endpoints:[/bold]\n"
-        + "\n".join(f"  {k}: {v}" for k, v in safe["custom_endpoints"].items())
-    ))
+    table = Table(title="SCVA Configuration Settings", title_style="bold magenta", border_style="cyan")
+    table.add_column("Category / Provider", style="bold white")
+    table.add_column("Setting / Key Status", style="bold yellow")
+
+    table.add_row("Default Oracle Provider", safe["default_oracle"])
+    table.add_section()
+
+    for k, v in safe["api_keys"].items():
+        status = f"[green]{v}[/green]" if v and "Not set" not in v else "[dim]Not set[/dim]"
+        table.add_row(f"API Key: {k}", status)
+
+    table.add_section()
+    for k, v in safe["default_models"].items():
+        table.add_row(f"Default Model: {k}", v)
+
+    console.print(table)
 
 
 @config.command("set-key")
 @click.argument("provider")
 @click.argument("key")
 def config_set_key(provider: str, key: str):
-    """Securely store an API key (e.g. gemini, openai, claude, openrouter, semantic_scholar, glm)."""
+    """Securely store an API key (e.g. gemini, openai, claude, deepseek, moonshot, openrouter)."""
     cfg = ConfigManager()
     cfg.set_key(provider, key)
     console.print(f"[bold green]Saved API key for '{provider}' successfully![/bold green]")
@@ -156,7 +216,7 @@ def config_set_key(provider: str, key: str):
 @config.command("set-default-oracle")
 @click.argument("oracle_name")
 def config_set_default_oracle(oracle_name: str):
-    """Set default oracle provider (antigravity, gemini, openai, claude, ollama, openrouter, nanogpt, glm)."""
+    """Set default oracle provider (antigravity, gemini, openai, claude, deepseek, moonshot, ollama)."""
     cfg = ConfigManager()
     cfg.set_default_oracle(oracle_name)
     console.print(f"[bold green]Default oracle provider set to '{oracle_name}'![/bold green]")
@@ -166,20 +226,10 @@ def config_set_default_oracle(oracle_name: str):
 @click.argument("provider")
 @click.argument("model_name")
 def config_set_model(provider: str, model_name: str):
-    """Set default model for a specific provider (e.g. set-model ollama llama3.2)."""
+    """Set default model for a specific provider (e.g. set-model deepseek deepseek-reasoner)."""
     cfg = ConfigManager()
     cfg.set_model(provider, model_name)
     console.print(f"[bold green]Default model for '{provider}' set to '{model_name}'![/bold green]")
-
-
-@config.command("set-endpoint")
-@click.argument("endpoint_name")
-@click.argument("url")
-def config_set_endpoint(endpoint_name: str, url: str):
-    """Set custom endpoint URL (e.g. set-endpoint ollama_base_url http://localhost:11434)."""
-    cfg = ConfigManager()
-    cfg.set_endpoint(endpoint_name, url)
-    console.print(f"[bold green]Custom endpoint '{endpoint_name}' set to '{url}'![/bold green]")
 
 
 if __name__ == "__main__":
