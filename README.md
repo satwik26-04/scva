@@ -1,5 +1,6 @@
 # Scientific Citation Verification Agent (SCVA)
 
+[![PyPI Version](https://img.shields.io/pypi/v/scva.svg)](https://pypi.org/project/scva/)
 [![Python Version](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -26,7 +27,7 @@ To give your **Antigravity AI Agent** (or any compatible LLM pair-programming ag
 
 1. **Install SCVA:**
    ```bash
-   pip install git+https://github.com/satwik26-04/scva.git
+   pip install scva
    ```
 
 2. **Add `SKILL.md` to your Project or Agent Configuration:**
