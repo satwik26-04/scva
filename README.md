@@ -42,41 +42,8 @@ To give your **Antigravity AI Agent** (or any compatible LLM pair-programming ag
 
 ---
 
-## 18-Stage Verification Architecture
-
-```
-                  ┌──────────────────────────────────────────────────┐
-                  │              INPUTS (.tex, .bib)                 │
-                  └────────────────────────┬─────────────────────────┘
-                                           │
- ┌─────────────────────────────────────────▼────────────────────────────────────────┐
- │                              18-STAGE PIPELINE                                   │
- ├──────────────────────────────────────────────────────────────────────────────────┤
- │ S01: Parse Inputs & Citation Graph       S10: Primary Source Detection           │
- │ S02: Metadata Verification               S11: Version Checking (arXiv vs Published)│
- │ S03: Multi-Source Validation             S12: Duplicate Detection                │
- │ S04: Paper Retrieval (PDF / Abstract)    S13: Consistency Audit                  │
- │ S05: Semantic Understanding              S14: PDF Deep Evidence Search           │
- │ S06: Claim Extraction                    S15: Confidence Scoring                 │
- │ S07: Claim-to-Citation Verification      S16: Per-Entry Report Generation        │
- │ S08: Citation Completeness               S17: Automatic BibTeX Fixer             │
- │ S09: Over/Under-Citation Density         S18: Scientific Integrity Quality Score │
- └────────────────────────┬────────────────────────────────┬────────────────────────┘
-                          │                                │
-        ┌─────────────────▼─────────────────┐   ┌──────────▼──────────┐
-        │       MULTI-SOURCE APIS           │   │  MULTI-PROVIDER LLM │
-        │ Crossref | DBLP | OpenAlex        │   │ DeepSeek | Moonshot │
-        │ Semantic Scholar | arXiv          │   │ Gemini | OpenAI ... │
-        └───────────────────────────────────┘   └─────────────────────┘
-                                           │
- ┌─────────────────────────────────────────▼────────────────────────────────────────┐
- │                               OUTPUT ARTIFACTS                                   │
- │ report.md (Markdown) | report.html (Dashboard) | report.json | report.csv       │
- │ references_corrected.bib (Auto-fixed BibTeX) | scva.db (SQLite Cache)            │
- └──────────────────────────────────────────────────────────────────────────────────┘
-```
-
----
+## 18-Stage Verification Architecture 
+![18-stage citation verification pipeline](https://github.com/user-attachments/assets/c9a4d1da-c750-424b-ab84-e93f9c3faed5) 
 
 ## Installation
 
